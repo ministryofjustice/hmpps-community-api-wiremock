@@ -1,0 +1,21 @@
+db:
+  driver:
+    class:
+      name: org.hsqldb.jdbcDriver
+  url: jdbc:hsqldb:mem:db
+
+server:
+  port: 5000
+
+spring:
+  jpa:
+    open-in-view: false
+    defer-datasource-initialization: true
+
+auth:
+  host: ${HMPPS_AUTH_URL}
+  clientId: ${SYSTEM_CLIENT_ID}
+  clientSecret: ${SYSTEM_CLIENT_SECRET}
+
+prisonerSearchApi:
+  host: ${PRISONER_SEARCH_API_URL}

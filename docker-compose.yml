@@ -1,0 +1,13 @@
+version: '3.4'
+services:
+  community-api-wiremock:
+    container_name: community-api-wiremock
+    build:
+      context: .
+      dockerfile: Dockerfile
+    healthcheck:
+      test: [ 'CMD', 'curl', '-f', 'http://localhost:5000/actuator/health' ]
+    env_file:
+      - ./.env
+    ports:
+      - "5000:5000"
