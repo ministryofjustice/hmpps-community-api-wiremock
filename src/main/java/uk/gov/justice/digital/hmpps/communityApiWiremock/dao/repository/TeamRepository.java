@@ -10,4 +10,5 @@ public interface TeamRepository extends JpaRepository<TeamEntity, Long> {
 
   Optional<TeamEntity> findByTeamCode(String teamCode);
   TeamEntity getByTeamCode(String teamCode);
+  Optional<TeamEntity> findByBoroughCode(String pduCode);
 }

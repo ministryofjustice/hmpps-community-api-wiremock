@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.OffenderEntity;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.StaffEntity;
@@ -86,6 +87,15 @@ public class DeliusResource {
         .orElseThrow(() -> new NotFoundException("Staff member not found"));
 
     return mapper.fromEntityToStaffDetailResponse(staff);
+  }
+
+  @GetMapping(value = "/secure/staff/pduHeads/{pduCode}")
+  public List<StaffDetailResponse> getPduHeads(@PathVariable String pduCode) {
+    List<StaffEntity> staff = this.service.getPduHeads(pduCode);
+
+    return staff.stream()
+        .map(mapper::fromEntityToStaffDetailResponse)
+        .collect(Collectors.toList());
   }
 
   @PostMapping(value = "/secure/staff/list")

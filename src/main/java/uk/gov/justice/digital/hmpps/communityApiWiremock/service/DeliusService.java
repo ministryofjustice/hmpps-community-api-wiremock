@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.communityApiWiremock.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,10 @@ public class DeliusService {
 
   public List<StaffEntity> getStaffByStaffCodes(List<String> staffCodes) {
     return this.staffRepository.findByStaffCodeIn(staffCodes);
+  }
+
+  public List<StaffEntity> getPduHeads(String pduCode) {
+    return this.teamRepository.findByBoroughCode(pduCode).map(TeamEntity::getStaff).orElse(Collections.emptyList());
   }
 
   public List<OffenderEntity> getAllOffendersByStaffId(Long staffId) {
