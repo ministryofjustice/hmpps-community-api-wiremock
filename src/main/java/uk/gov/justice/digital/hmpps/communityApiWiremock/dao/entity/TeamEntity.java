@@ -41,7 +41,7 @@ public class TeamEntity {
       joinColumns = { @JoinColumn(name = "team_id") },
       inverseJoinColumns = { @JoinColumn(name = "staff_id") }
   )
-  private Set<StaffEntity> staff;
+  private List<StaffEntity> staff;
 
   @OneToMany(mappedBy="team")
   private List<OffenderEntity> managedOffenders;
