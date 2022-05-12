@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.OffenderEntity;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.StaffEntity;
@@ -134,7 +133,6 @@ public class DeliusResource {
 
   @GetMapping(value = "/secure/staff/staffIdentifier/{staffId}/caseload/managedOffenders")
   public List<CaseloadResponse> getStaffCaseload(@PathVariable long staffId) {
-    var test = service.getAllOffendersByStaffId(staffId);
     return service.getAllOffendersByStaffId(staffId).stream()
         .map(mapper::fromEntityToCaseloadResponse)
         .collect(Collectors.toList());
@@ -142,7 +140,6 @@ public class DeliusResource {
 
   @GetMapping(value = "/secure/team/{teamCode}/caseload/managedOffenders")
   public List<CaseloadResponse> getTeamCaseload(@PathVariable String teamCode) {
-    var test = service.getAllOffendersByTeamCode(teamCode);
     return service.getAllOffendersByTeamCode(teamCode).stream()
         .map(mapper::fromEntityToCaseloadResponse)
         .collect(Collectors.toList());
