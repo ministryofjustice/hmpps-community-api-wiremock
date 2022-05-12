@@ -1,12 +1,15 @@
 package uk.gov.justice.digital.hmpps.communityApiWiremock.config;
 
 import com.github.javafaker.Faker;
+import com.opencsv.bean.CsvToBeanBuilder;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -32,19 +35,9 @@ public class DataLoader implements ApplicationRunner {
   private final StaffRepository staffRepository;
   private final TeamRepository teamRepository;
   private final PrisonerSearchApiClient prisonerSearchApiClient;
-  private final Faker faker = new Faker(new Random(12345));
 
-  @Value("classpath:tim.txt")
-  Resource timCases;
-
-  @Value("classpath:stephen.txt")
-  Resource stephenCases;
-
-  @Value("classpath:cvl_com.txt")
-  Resource cvlComCases;
-
-  @Value("classpath:unallocated.txt")
-  Resource unallocatedCases;
+  @Value("classpath:caseloads.csv")
+  Resource caseloads;
 
   @Autowired
   public DataLoader(
@@ -61,41 +54,48 @@ public class DataLoader implements ApplicationRunner {
 
   @Transactional
   public void run(ApplicationArguments args) throws IOException {
-    List<String> stephen = IOUtils.readLines(stephenCases.getInputStream());
-    addCases(stephen, "cvl", 1000L);
+    List<CsvOffenderCase> cases = new CsvToBeanBuilder<CsvOffenderCase>(new FileReader(this.caseloads.getFile()))
+        .withType(CsvOffenderCase.class)
+        .build()
+        .parse();
 
-    List<String> tim = IOUtils.readLines(timCases.getInputStream());
-    addCases(tim, "cvl", 2000L);
-
-    List<String> cvlCom = IOUtils.readLines(cvlComCases.getInputStream());
-    addCases(cvlCom, "cvl", 3000L);
-
-    List<String> unallocated = IOUtils.readLines(unallocatedCases.getInputStream());
-    addCases(unallocated, "cvl", null);
+    addCases(cases);
   }
 
-  private void addCases(List<String> nomisIds, String teamCode, Long staffId) {
-    log.info(String.format("Adding cases for staff id %s", staffId));
+  private void addCases(List<CsvOffenderCase> cases) {
     List<OffenderEntity> offenders = new ArrayList<>();
-    List<PrisonerDetailsResponse> prisonerList = prisonerSearchApiClient.getPrisoners(nomisIds);
 
-    TeamEntity team = this.teamRepository.findByTeamCode(teamCode)
-        .orElseThrow(NotFoundException::new);
+    Map<String, Map<String, List<CsvOffenderCase>>> casesGroupedByUsernameAndTeam =
+        cases.stream().collect(Collectors.groupingBy(CsvOffenderCase::getUsername,
+            Collectors.groupingBy(CsvOffenderCase::getTeamCode)));
 
-    StaffEntity staff = this.staffRepository.findByStaffIdentifier(staffId).orElse(null);
+    casesGroupedByUsernameAndTeam.forEach((username, groupedByTeam) -> {
+      groupedByTeam.forEach((teamCode, caseload) -> {
+        List<String> nomisIds = caseload.stream().map(c -> c.nomisId).collect(Collectors.toList());
+        List<PrisonerDetailsResponse> prisonerList = prisonerSearchApiClient.getPrisoners(nomisIds);
 
-    for (PrisonerDetailsResponse prisoner : prisonerList) {
-      OffenderEntity offenderEntity = new OffenderEntity();
+        StaffEntity staff = this.staffRepository.findByUsername(username).orElse(null);
+        TeamEntity team = this.teamRepository.findByTeamCode(teamCode)
+            .orElseThrow(NotFoundException::new);
 
-      offenderEntity.setNomsNumber(prisoner.getPrisonerNumber());
-      offenderEntity.setCrnNumber(faker.regexify("[A-Z][0-9]{6}"));
-      offenderEntity.setCroNumber(faker.regexify("[0-9]{1}/[0-9]{5}"));
-      offenderEntity.setPncNumber(faker.regexify("[0-9]{4}/[0-9]{5}"));
-      offenderEntity.setStaff(staff);
-      offenderEntity.setTeam(team);
+        log.info(String.format("Loading cases for %s in team %s",
+            staff != null ? staff.getUsername() : "Unallocated", teamCode));
 
-      offenders.add(offenderEntity);
-    }
+        for (PrisonerDetailsResponse prisoner : prisonerList) {
+          OffenderEntity offenderEntity = new OffenderEntity();
+          Faker faker = new Faker(new Random(prisoner.getPrisonerNumber().hashCode()));
+
+          offenderEntity.setNomsNumber(prisoner.getPrisonerNumber());
+          offenderEntity.setCrnNumber(faker.regexify("[A-Z][0-9]{6}"));
+          offenderEntity.setCroNumber(faker.regexify("[0-9]{1}/[0-9]{5}"));
+          offenderEntity.setPncNumber(faker.regexify("[0-9]{4}/[0-9]{5}"));
+          offenderEntity.setStaff(staff);
+          offenderEntity.setTeam(team);
+
+          offenders.add(offenderEntity);
+        }
+      });
+    });
 
     offenderRepository.saveAllAndFlush(offenders);
   }
