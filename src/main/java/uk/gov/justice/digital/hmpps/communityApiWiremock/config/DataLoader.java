@@ -2,8 +2,8 @@ package uk.gov.justice.digital.hmpps.communityApiWiremock.config;
 
 import com.github.javafaker.Faker;
 import com.opencsv.bean.CsvToBeanBuilder;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +54,8 @@ public class DataLoader implements ApplicationRunner {
 
   @Transactional
   public void run(ApplicationArguments args) throws IOException {
-    List<CsvOffenderCase> cases = new CsvToBeanBuilder<CsvOffenderCase>(new FileReader(this.caseloads.getFile()))
+    List<CsvOffenderCase> cases = new CsvToBeanBuilder<CsvOffenderCase>(
+        new InputStreamReader(caseloads.getInputStream()))
         .withType(CsvOffenderCase.class)
         .build()
         .parse();
