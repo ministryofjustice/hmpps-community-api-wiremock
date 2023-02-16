@@ -1,8 +1,8 @@
 -- TEAMS
 INSERT INTO team(id, team_code, team_description, team_telephone, borough_code, borough_description, district_code, district_description) VALUES
 (1, 'cvl', 'Licence Team', '0800001066', 'N55PDU', 'Nottingham', 'N55LAU', 'Nottingham South'),
-(2, 'cvl2', 'Alpha Team', '0800001066', 'N55PDU', 'Nottingham', 'N55LAU', 'Nottingham South'),
-(3, 'cvl3', 'Beta Team', '0800001066', 'N55PDU', 'Nottingham', 'N55LAU', 'Nottingham South');
+(2, 'cvl2', 'Alpha Team', '0800001066', 'N55PDV', 'Nottingham 2', 'N55LAU', 'Nottingham South'),
+(3, 'cvl3', 'Beta Team', '0800001066', 'N55PDW', 'Nottingham 3', 'N55LAU', 'Nottingham South');
 
 -- STAFF
 -- Only put your email address here if you want to receive notifications via Gov UK Notify
