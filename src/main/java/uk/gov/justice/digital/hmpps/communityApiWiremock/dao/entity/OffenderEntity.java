@@ -28,9 +28,9 @@ public class OffenderEntity {
 
   @ManyToOne
   @JoinColumn(name="staff_id")
-  private uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.StaffEntity staff;
+  private StaffEntity staff;
 
   @ManyToOne
   @JoinColumn(name="team_id", nullable = false)
-  private uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.TeamEntity team;
+  private TeamEntity team;
 }
