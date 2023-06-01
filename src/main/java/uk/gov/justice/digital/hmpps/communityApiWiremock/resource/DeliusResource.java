@@ -15,7 +15,12 @@ import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.OffenderEnti
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.StaffEntity;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.request.ProbationSearchRequest;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.request.SearchProbationerRequest;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.*;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CaseloadResponse;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CommunityOrPrisonOffenderManager;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationerResponse;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationSearchResponse;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.StaffDetailResponse;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.UserDetailResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.exception.NotFoundException;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.mapper.Mapper;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.service.DeliusService;
