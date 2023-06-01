@@ -90,6 +90,8 @@ public class DataLoader implements ApplicationRunner {
           offenderEntity.setCrnNumber(faker.regexify("[A-Z][0-9]{6}"));
           offenderEntity.setCroNumber(faker.regexify("[0-9]{1}/[0-9]{5}"));
           offenderEntity.setPncNumber(faker.regexify("[0-9]{4}/[0-9]{5}"));
+          offenderEntity.setForename(prisoner.getFirstName());
+          offenderEntity.setSurname(prisoner.getLastName());
           offenderEntity.setStaff(staff);
           offenderEntity.setTeam(team);
 

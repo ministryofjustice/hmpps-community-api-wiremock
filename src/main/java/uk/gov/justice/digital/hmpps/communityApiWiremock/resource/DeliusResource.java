@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.OffenderEntity;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.StaffEntity;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.request.ProbationSearchRequest;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.request.SearchProbationerRequest;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CaseloadResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationerResponse;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationSearchResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.StaffDetailResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.UserDetailResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.exception.NotFoundException;
@@ -174,5 +176,12 @@ public class DeliusResource {
     return service.findOffendersByNomsNumberIn(nomsNumbers).stream()
         .map(mapper::fromEntityToProbationerResponse)
         .collect(Collectors.toList());
+  }
+
+  @PostMapping(value = "/licence-caseload/by-team")
+  public List<ProbationSearchResponse> getProbationSearchResult(@RequestBody ProbationSearchRequest body) {
+    return service.getProbationSearchResult(body.getTeamCodes(), body.getQuery()).stream()
+            .map(mapper::fromEntityToProbationSearchResponse)
+            .collect(Collectors.toList());
   }
 }

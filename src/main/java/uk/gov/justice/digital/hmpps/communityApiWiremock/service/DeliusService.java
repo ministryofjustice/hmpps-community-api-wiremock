@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.communityApiWiremock.service;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -78,5 +79,27 @@ public class DeliusService {
 
   public List<OffenderEntity> findOffendersByNomsNumberIn(List<String> nomsNumbers) {
     return this.offenderRepository.findByNomsNumberIn(nomsNumbers);
+  }
+
+  public List<OffenderEntity> getProbationSearchResult(List<String> teamCodes, String query) {
+    String searchString = query.toLowerCase().trim();
+
+    if (searchString.isEmpty())
+      return List.of();
+
+    return teamCodes.stream()
+            .flatMap(teamCode -> getAllOffendersByTeamCode(teamCode).stream())
+            .filter(offender -> matchesOffender(offender, searchString))
+            .sorted(Comparator.comparing(OffenderEntity::getForename))
+            .toList();
+  }
+
+  private Boolean matchesOffender(OffenderEntity offender, String searchString) {
+    return (offender.getCrnNumber().toLowerCase().contains(searchString)) ||
+            (offender.getNomsNumber().toLowerCase().contains(searchString)) ||
+            (offender.getForename().toLowerCase().contains(searchString)) ||
+            (offender.getSurname().toLowerCase().contains(searchString)) ||
+            (offender.getStaff().getStaffForenames().toLowerCase().contains(searchString)) ||
+            (offender.getStaff().getStaffSurname().toLowerCase().contains(searchString));
   }
 }

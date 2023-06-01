@@ -23,6 +23,8 @@ public class OffenderEntity {
   private String crnNumber;
   private String croNumber;
   private String pncNumber;
+  private String forename;
+  private String surname;
 
   @ManyToOne
   @JoinColumn(name="staff_id")
