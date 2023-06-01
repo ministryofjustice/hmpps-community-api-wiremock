@@ -87,7 +87,6 @@ public class DeliusService {
     if (searchString.isEmpty())
       return List.of();
 
-
     return teamCodes.stream()
             .flatMap(teamCode -> getAllOffendersByTeamCode(teamCode).stream())
             .filter(offender -> matchesOffender(offender, searchString))
@@ -96,11 +95,11 @@ public class DeliusService {
   }
 
   private Boolean matchesOffender(OffenderEntity offender, String searchString) {
-    return (offender.getCrnNumber().toLowerCase().equals(searchString)) ||
-            (offender.getNomsNumber().toLowerCase().equals(searchString)) ||
-            (offender.getForename().toLowerCase().equals(searchString)) ||
-            (offender.getSurname().toLowerCase().equals(searchString)) ||
-            (offender.getStaff().getStaff.toLowerCase().equals(searchString)) ||
-            (offender.getStaff().getStaffSurname().toLowerCase().equals(searchString));
+    return (offender.getCrnNumber().toLowerCase().contains(searchString)) ||
+            (offender.getNomsNumber().toLowerCase().contains(searchString)) ||
+            (offender.getForename().toLowerCase().contains(searchString)) ||
+            (offender.getSurname().toLowerCase().contains(searchString)) ||
+            (offender.getStaff().getStaffForenames().toLowerCase().contains(searchString)) ||
+            (offender.getStaff().getStaffSurname().toLowerCase().contains(searchString));
   }
 }
