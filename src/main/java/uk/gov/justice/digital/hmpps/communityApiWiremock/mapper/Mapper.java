@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.Probatione
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.StaffDetailResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.TeamResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.UserDetailResponse;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationSearchResponse;
 
 @Component
 public class Mapper {
@@ -59,5 +60,9 @@ public class Mapper {
     }
 
     return result;
+  }
+
+  public ProbationSearchResponse fromEntityToProbationSearchResponse(OffenderEntity offenderEntity) {
+    return modelMapper.map(offenderEntity, ProbationSearchResponse.class);
   }
 }

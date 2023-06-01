@@ -23,12 +23,14 @@ public class OffenderEntity {
   private String crnNumber;
   private String croNumber;
   private String pncNumber;
+  private String forename;
+  private String surname;
 
   @ManyToOne
   @JoinColumn(name="staff_id")
-  private StaffEntity staff;
+  private uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.StaffEntity staff;
 
   @ManyToOne
   @JoinColumn(name="team_id", nullable = false)
-  private TeamEntity team;
+  private uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.TeamEntity team;
 }
