@@ -3,13 +3,10 @@ package uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 public class ProbationSearchResponse {
-    NameResponse name;
-    IdentifiersResponse identifiers;
-    ManagerResponse manager;
-    String allocationDate = LocalDate.now().minusDays(1).toString();
+    List<ProbationSearchContent> content;
 }

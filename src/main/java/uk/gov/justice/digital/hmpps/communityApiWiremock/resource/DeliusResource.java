@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.request.SearchProba
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CaseloadResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationerResponse;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationSearchContent;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationSearchResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.StaffDetailResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.UserDetailResponse;
@@ -179,9 +180,12 @@ public class DeliusResource {
   }
 
   @PostMapping(value = "/licence-caseload/by-team")
-  public List<ProbationSearchResponse> getProbationSearchResult(@RequestBody ProbationSearchRequest body) {
-    return service.getProbationSearchResult(body.getTeamCodes(), body.getQuery()).stream()
-            .map(mapper::fromEntityToProbationSearchResponse)
-            .collect(Collectors.toList());
+  public ProbationSearchResponse getProbationSearchResult(@RequestBody ProbationSearchRequest body) {
+    List<ProbationSearchContent> content =  service.getProbationSearchResult(body.getTeamCodes(), body.getQuery()).stream()
+            .map(mapper::fromEntityToProbationSearchContent)
+            .toList();
+    ProbationSearchResponse response = new ProbationSearchResponse();
+    response.setContent(content);
+    return response;
   }
 }
