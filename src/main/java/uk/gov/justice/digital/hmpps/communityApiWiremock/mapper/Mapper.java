@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CaseloadRe
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.OffenderManagerResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationerResponse;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationSearchResponse;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationSearchContent;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.StaffDetailResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.TeamResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.UserDetailResponse;
@@ -62,7 +62,7 @@ public class Mapper {
     return result;
   }
 
-  public ProbationSearchResponse fromEntityToProbationSearchResponse(OffenderEntity offenderEntity) {
-    return modelMapper.map(offenderEntity, ProbationSearchResponse.class);
+  public ProbationSearchContent fromEntityToProbationSearchContent(OffenderEntity offenderEntity) {
+    return modelMapper.map(offenderEntity, ProbationSearchContent.class);
   }
 }

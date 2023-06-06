@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CaseloadRe
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.OffenderManagerResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationerResponse;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationSearchResponse;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationSearchContent;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.StaffDetailResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.TeamResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.UserDetailResponse;
@@ -104,7 +104,7 @@ public class CommunityApiWiremockConfiguration {
         .addMappings(mapper -> mapper.map(StaffEntity::getStaffSurname, UserDetailResponse::setSurname))
         .addMappings(mapper -> mapper.map(StaffEntity::getUsername, UserDetailResponse::setUsername));
 
-    modelMapper.createTypeMap(OffenderEntity.class, ProbationSearchResponse.class)
+    modelMapper.createTypeMap(OffenderEntity.class, ProbationSearchContent.class)
         .addMappings(mapper -> mapper.<String>map(OffenderEntity::getForename, (dest, v) -> dest.getName().setForename(v)))
         .addMappings(mapper -> mapper.<String>map(OffenderEntity::getSurname, (dest, v) -> dest.getName().setSurname(v)))
         .addMappings(mapper -> mapper.<String>map(OffenderEntity::getCrnNumber, (dest, v) -> dest.getIdentifiers().setCrn(v)))

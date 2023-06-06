@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.OffenderEntity;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.StaffEntity;
@@ -95,11 +98,18 @@ public class DeliusService {
   }
 
   private Boolean matchesOffender(OffenderEntity offender, String searchString) {
-    return (offender.getCrnNumber().toLowerCase().contains(searchString)) ||
-            (offender.getNomsNumber().toLowerCase().contains(searchString)) ||
-            (offender.getForename().toLowerCase().contains(searchString)) ||
-            (offender.getSurname().toLowerCase().contains(searchString)) ||
-            (offender.getStaff().getStaffForenames().toLowerCase().contains(searchString)) ||
-            (offender.getStaff().getStaffSurname().toLowerCase().contains(searchString));
+    if (offender.getStaff() != null) {
+      return (offender.getCrnNumber().toLowerCase().contains(searchString)) ||
+              (offender.getNomsNumber().toLowerCase().contains(searchString)) ||
+              (offender.getForename().toLowerCase().contains(searchString)) ||
+              (offender.getSurname().toLowerCase().contains(searchString)) ||
+              (offender.getStaff().getStaffForenames().toLowerCase().contains(searchString)) ||
+              (offender.getStaff().getStaffSurname().toLowerCase().contains(searchString));
+    } else {
+      return (offender.getCrnNumber().toLowerCase().contains(searchString)) ||
+              (offender.getNomsNumber().toLowerCase().contains(searchString)) ||
+              (offender.getForename().toLowerCase().contains(searchString)) ||
+              (offender.getSurname().toLowerCase().contains(searchString));
+    }
   }
 }
