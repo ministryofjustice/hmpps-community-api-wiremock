@@ -26,11 +26,14 @@ import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.repository.TeamRepo
 import uk.gov.justice.digital.hmpps.communityApiWiremock.exception.NotFoundException;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.httpClient.PrisonerSearchApiClient;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.httpClient.dto.PrisonerDetailsResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 @Slf4j
 public class DataLoader implements ApplicationRunner {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(DataLoader.class);
   private final OffenderRepository offenderRepository;
   private final StaffRepository staffRepository;
   private final TeamRepository teamRepository;
@@ -73,6 +76,7 @@ public class DataLoader implements ApplicationRunner {
     casesGroupedByUsernameAndTeam.forEach((username, groupedByTeam) -> {
       groupedByTeam.forEach((teamCode, caseload) -> {
         List<String> nomisIds = caseload.stream().map(c -> c.nomisId).collect(Collectors.toList());
+        LOGGER.info("Searching for: '{}'", nomisIds);
         List<PrisonerDetailsResponse> prisonerList = prisonerSearchApiClient.getPrisoners(nomisIds);
 
         StaffEntity staff = this.staffRepository.findByUsername(username).orElse(null);

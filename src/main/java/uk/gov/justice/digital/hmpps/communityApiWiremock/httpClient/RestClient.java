@@ -58,6 +58,7 @@ public class RestClient {
 
   private void getToken() {
     HttpHeaders headers = new HttpHeaders();
+    headers.add("Content-Type", "application/x-www-form-urlencoded");
     headers.add("Authorization", "Basic " + Base64.getEncoder()
         .encodeToString((clientId + ":" + clientSecret).getBytes(StandardCharsets.UTF_8)));
     HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
