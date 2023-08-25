@@ -87,6 +87,7 @@ public class DeliusService {
 
   public List<OffenderEntity> getProbationSearchResult(List<String> teamCodes, String query, ProbationSearchSortByRequest sortBy) {
     String searchString = query.toLowerCase().trim();
+
     if (searchString.isEmpty())
       return List.of();
 
