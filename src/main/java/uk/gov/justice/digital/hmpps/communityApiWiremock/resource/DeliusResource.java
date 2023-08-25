@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.OffenderEntity;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.StaffEntity;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.request.ProbationSearchRequest;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.request.ProbationSearchSortByRequest;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.request.SearchProbationerRequest;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CaseloadResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CommunityOrPrisonOffenderManager;
@@ -181,7 +182,9 @@ public class DeliusResource {
 
   @PostMapping(value = "/licence-caseload/by-team")
   public ProbationSearchResponse getProbationSearchResult(@RequestBody ProbationSearchRequest body) {
-    List<ProbationSearchContent> content =  service.getProbationSearchResult(body.getTeamCodes(), body.getQuery()).stream()
+    List<ProbationSearchContent> content = service
+            .getProbationSearchResult(body.getTeamCodes(), body.getQuery(), body.getSortBy().get(0))
+            .stream()
             .map(mapper::fromEntityToProbationSearchContent)
             .toList();
     ProbationSearchResponse response = new ProbationSearchResponse();

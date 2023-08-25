@@ -8,5 +8,5 @@ import java.util.List;
 public class ProbationSearchRequest {
     List<String> teamCodes;
     String query;
-    ProbationSearchSortByRequest sortBy;
+    List<ProbationSearchSortByRequest> sortBy;
 }

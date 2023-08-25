@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.TeamEntity;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.repository.OffenderRepository;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.repository.StaffRepository;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.repository.TeamRepository;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.request.ProbationSearchSortByRequest;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.exception.NotFoundException;
 
 @Service
@@ -84,16 +85,28 @@ public class DeliusService {
     return this.offenderRepository.findByNomsNumberIn(nomsNumbers);
   }
 
-  public List<OffenderEntity> getProbationSearchResult(List<String> teamCodes, String query) {
+  public List<OffenderEntity> getProbationSearchResult(List<String> teamCodes, String query, ProbationSearchSortByRequest sortBy) {
     String searchString = query.toLowerCase().trim();
 
     if (searchString.isEmpty())
       return List.of();
 
+    Comparator<OffenderEntity> sortPreference;
+
+    if (sortBy.getField() == "name.forename") {
+      if (sortBy.getDirection() == "asc") {
+        sortPreference = Comparator.comparing(OffenderEntity::getForename);
+      } else {
+        sortPreference = Comparator.comparing(OffenderEntity::getForename, Comparator.reverseOrder());
+      }
+    } else {
+      sortPreference = Comparator.comparing(OffenderEntity::getSurname);
+    }
+
     return teamCodes.stream()
             .flatMap(teamCode -> getAllOffendersByTeamCode(teamCode).stream())
             .filter(offender -> matchesOffender(offender, searchString))
-            .sorted(Comparator.comparing(OffenderEntity::getForename))
+            .sorted(sortPreference)
             .toList();
   }
 
