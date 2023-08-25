@@ -182,7 +182,9 @@ public class DeliusResource {
 
   @PostMapping(value = "/licence-caseload/by-team")
   public ProbationSearchResponse getProbationSearchResult(@RequestBody ProbationSearchRequest body) {
-    List<ProbationSearchContent> content =  service.getProbationSearchResult(body.getTeamCodes(), body.getQuery(), body.getSortBy().get(0)).stream()
+    List<ProbationSearchContent> content = service
+            .getProbationSearchResult(body.getTeamCodes(), body.getQuery(), body.getSortBy().get(0))
+            .stream()
             .map(mapper::fromEntityToProbationSearchContent)
             .toList();
     ProbationSearchResponse response = new ProbationSearchResponse();
