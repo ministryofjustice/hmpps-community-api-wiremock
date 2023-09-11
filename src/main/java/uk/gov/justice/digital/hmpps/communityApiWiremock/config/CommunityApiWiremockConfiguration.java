@@ -112,7 +112,8 @@ public class CommunityApiWiremockConfiguration {
         .addMappings(mapper -> mapper.<String>map(src -> src.getStaff().getStaffCode(), (dest, v) -> dest.getManager().setCode(v)))
         .addMappings(mapper -> mapper.<String>map(src -> src.getStaff().getStaffForenames(), (dest, v) -> dest.getManager().getName().setForename(v)))
         .addMappings(mapper -> mapper.<String>map(src -> src.getStaff().getStaffSurname(), (dest, v) -> dest.getManager().getName().setSurname(v)))
-        .addMappings(mapper -> mapper.<String>map(src -> src.getTeam().getTeamCode(), (dest, v) -> dest.getManager().getTeam().setCode(v)));
+        .addMappings(mapper -> mapper.<String>map(src -> src.getTeam().getTeamCode(), (dest, v) -> dest.getManager().getTeam().setCode(v)))
+        .addMappings(mapper -> mapper.<String>map(src -> src.getTeam().getTeamDescription(), (dest, v) -> dest.getManager().getTeam().setDescription(v)));
 
     return modelMapper;
   }
