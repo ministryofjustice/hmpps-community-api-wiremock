@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.OffenderEntity;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.StaffEntity;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.request.ProbationSearchRequest;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.request.ProbationSearchSortByRequest;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.request.SearchProbationerRequest;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CaseloadResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CommunityOrPrisonOffenderManager;
