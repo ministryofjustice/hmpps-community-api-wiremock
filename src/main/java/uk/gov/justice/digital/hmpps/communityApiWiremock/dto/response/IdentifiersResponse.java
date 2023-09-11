@@ -7,4 +7,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class IdentifiersResponse {
     String crn;
+    String noms;
 }

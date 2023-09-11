@@ -108,6 +108,7 @@ public class CommunityApiWiremockConfiguration {
         .addMappings(mapper -> mapper.<String>map(OffenderEntity::getForename, (dest, v) -> dest.getName().setForename(v)))
         .addMappings(mapper -> mapper.<String>map(OffenderEntity::getSurname, (dest, v) -> dest.getName().setSurname(v)))
         .addMappings(mapper -> mapper.<String>map(OffenderEntity::getCrnNumber, (dest, v) -> dest.getIdentifiers().setCrn(v)))
+        .addMappings(mapper -> mapper.<String>map(OffenderEntity::getNomsNumber, (dest, v) -> dest.getIdentifiers().setNoms(v)))
         .addMappings(mapper -> mapper.<String>map(src -> src.getStaff().getStaffCode(), (dest, v) -> dest.getManager().setCode(v)))
         .addMappings(mapper -> mapper.<String>map(src -> src.getStaff().getStaffForenames(), (dest, v) -> dest.getManager().getName().setForename(v)))
         .addMappings(mapper -> mapper.<String>map(src -> src.getStaff().getStaffSurname(), (dest, v) -> dest.getManager().getName().setSurname(v)))
