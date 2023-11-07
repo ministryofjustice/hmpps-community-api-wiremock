@@ -7,9 +7,9 @@ INSERT INTO team(id, team_code, team_description, team_telephone, borough_code, 
 -- STAFF
 -- Only put your email address here if you want to receive notifications via Gov UK Notify
 INSERT INTO staff(id, staff_identifier, username, staff_code, email, telephone_number, staff_forenames, staff_surname, probation_area_code, probation_area_description) VALUES
-(1, 1000, 'smcveigh2', 'X12340', 'steven.mcveigh@digital.justice.gov.uk', '07786 989777', 'Stephen', 'McVeigh', 'N55', 'Midlands'),
-(2, 2000, 'timharrison', 'X12341', 'timharrison@probation.gov.uk', '07786 989777', 'Tim', 'Harrison', 'N55', 'Midlands'),
-(3, 3000, 'cvl_com', 'X12342', 'cvl_com@probation.gov.uk', '07786 989777', 'CVL', 'COM', 'N03', 'Midlands');
+(1, 1000, 'smcveigh2', 'X12340', 'seb.negahban@digital.justice.gov.uk', '07786 989777', 'Stephen', 'McVeigh', 'N55', 'Midlands'),
+(2, 2000, 'timharrison', 'X12341', 'nishanth.mahasamudram@digital.justice.gov.uk', '07786 989777', 'Tim', 'Harrison', 'N55', 'Midlands'),
+(3, 3000, 'cvl_com', 'X12342', 'andrew.lee@digital.justice.gov.uk', '07786 989777', 'CVL', 'COM', 'N03', 'Midlands');
 
 -- TEAM-STAFF MAP
 INSERT INTO staff_team(staff_id, team_id) VALUES
