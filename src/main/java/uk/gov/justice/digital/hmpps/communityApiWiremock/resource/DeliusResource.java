@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.communityApiWiremock.exception.NotFoundExcep
 import uk.gov.justice.digital.hmpps.communityApiWiremock.mapper.Mapper;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.service.DeliusService;
 
+
 @Transactional
 @RestController
 public class DeliusResource {
@@ -189,5 +190,9 @@ public class DeliusResource {
     ProbationSearchResponse response = new ProbationSearchResponse();
     response.setContent(content);
     return response;
+  }
+
+  @GetMapping(value = "/health/ping")
+  public void ping() {
   }
 }
