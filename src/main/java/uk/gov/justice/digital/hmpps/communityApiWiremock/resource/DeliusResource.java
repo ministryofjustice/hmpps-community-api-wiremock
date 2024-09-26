@@ -16,12 +16,11 @@ import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.StaffEntity;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.request.ProbationSearchRequest;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.request.SearchProbationerRequest;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CaseloadResponse;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CommunityOrPrisonOffenderManager;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ResponsibleCommunityManager;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationerResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationSearchContent;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationSearchResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.StaffDetailResponse;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.UserDetailResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.exception.NotFoundException;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.mapper.Mapper;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.service.DeliusService;
@@ -39,26 +38,12 @@ public class DeliusResource {
     this.mapper = mapper;
   }
 
-  @PutMapping(value = "/secure/users/{username}/roles/{roleId}")
-  public String assignRole(@PathVariable String username, @PathVariable String roleId) {
-    return String.format("Role id %s assigned to %s", roleId, username);
+  @PutMapping(value = "/users/{username}/roles")
+  public String assignRole(@PathVariable String username) {
+    return String.format("CVL role assigned to %s", username);
   }
 
-  @GetMapping(value = "/secure/users/{username}/details")
-  public UserDetailResponse getUserDetails(@PathVariable String username) throws NotFoundException {
-    username = username.toLowerCase();
-
-    StaffEntity staff = this.service.getStaffByUsername(username)
-        .orElse(this.service.getStaff(2000L).get());
-
-    if (staff.getStaffIdentifier() == 2000L) {
-      staff.setUsername(username);
-    }
-
-    return mapper.fromEntityToUserDetailResponse(staff);
-  }
-
-  @GetMapping(value = "/secure/staff/username/{username}")
+  @GetMapping(value = "/staff/{username}")
   public StaffDetailResponse getStaffDetail(@PathVariable String username)
       throws NotFoundException {
     username = username.toLowerCase();
@@ -72,7 +57,7 @@ public class DeliusResource {
     return mapper.fromEntityToStaffDetailResponse(staff);
   }
 
-  @GetMapping(value = "/secure/staff/staffIdentifier/{staffId}")
+  @GetMapping(value = "/staff/byid/{staffId}")
   public StaffDetailResponse getStaffDetailByStaffIdentifier(@PathVariable Long staffId)
       throws NotFoundException {
 
@@ -82,7 +67,7 @@ public class DeliusResource {
     return mapper.fromEntityToStaffDetailResponse(staff);
   }
 
-  @GetMapping(value = "/secure/staff/staffCode/{staffCode}")
+  @GetMapping(value = "/staff/bycode/{staffCode}")
   public StaffDetailResponse getStaffDetailByStaffCode(@PathVariable String staffCode)
       throws NotFoundException {
 
@@ -92,7 +77,7 @@ public class DeliusResource {
     return mapper.fromEntityToStaffDetailResponse(staff);
   }
 
-  @GetMapping(value = "/secure/staff/pduHeads/{pduCode}")
+  @GetMapping(value = "/staff/{pduCode}/pdu-head")
   public List<StaffDetailResponse> getPduHeads(@PathVariable String pduCode) {
     List<StaffEntity> staff = this.service.getPduHeads(pduCode);
 
@@ -101,7 +86,7 @@ public class DeliusResource {
         .collect(Collectors.toList());
   }
 
-  @PostMapping(value = "/secure/staff/list")
+  @PostMapping(value = "/staff")
   public List<StaffDetailResponse> getStaffDetailByList(@RequestBody List<String> staffUsernames) {
     staffUsernames = staffUsernames.stream().filter(Objects::nonNull).map(String::toLowerCase)
         .collect(Collectors.toList());
@@ -126,32 +111,30 @@ public class DeliusResource {
     return response;
   }
 
-  @PostMapping(value = "/secure/staff/list/staffCodes")
-  public List<StaffDetailResponse> getStaffDetailByListOfStaffCodes(@RequestBody List<String> staffCodes) {
-    List<StaffEntity> staff = this.service.getStaffByStaffCodes(staffCodes);
-
-    return staff.stream()
-        .map(mapper::fromEntityToStaffDetailResponse)
-        .collect(Collectors.toList());
-  }
-
-  @GetMapping(value = "/secure/staff/staffIdentifier/{staffId}/caseload/managedOffenders")
+  @GetMapping(value = "/staff/byid/{staffId}/caseload/managed-offenders")
   public List<CaseloadResponse> getStaffCaseload(@PathVariable long staffId) {
     return service.getAllOffendersByStaffId(staffId).stream()
         .map(mapper::fromEntityToCaseloadResponse)
         .collect(Collectors.toList());
   }
 
-  @GetMapping(value = "/secure/team/{teamCode}/caseload/managedOffenders")
+  @GetMapping(value = "/team/{teamCode}/caseload/managed-offenders")
   public List<CaseloadResponse> getTeamCaseload(@PathVariable String teamCode) {
     return service.getAllOffendersByTeamCode(teamCode).stream()
         .map(mapper::fromEntityToCaseloadResponse)
         .collect(Collectors.toList());
   }
 
-  @GetMapping(value = "/secure/offenders/crn/{crn}/allOffenderManagers")
-  public List<CommunityOrPrisonOffenderManager> getManagersForAnOffender(@PathVariable String crn) {
-    return List.of(mapper.fromEntityToCommunityOrPrisonOffenderManager(service.getOffenderByCrn(crn)));
+  @GetMapping(value = "/probation-case/{crn}/responsible-community-manager")
+  public ResponsibleCommunityManager getManagersForAnOffender(@PathVariable String crn) {
+    return mapper.fromEntityToCommunityOrPrisonOffenderManager(service.getOffenderByCrn(crn));
+  }
+
+  @PostMapping(value = "/probation-case/responsible-community-manager")
+  public List<ResponsibleCommunityManager> getManagersForAnOffender(@RequestBody List<String> crns) {
+    return service.findOffendersByCrnIn(crns).stream()
+            .map(mapper::fromEntityToCommunityOrPrisonOffenderManager)
+            .collect(Collectors.toList());
   }
 
   @PostMapping(value = "/search")

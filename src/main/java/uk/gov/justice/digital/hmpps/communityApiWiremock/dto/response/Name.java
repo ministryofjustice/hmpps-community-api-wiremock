@@ -5,10 +5,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class OffenderManagerResponse {
-
-  Boolean active = true;
-  StaffResponse staff;
-  TeamResponse team;
-  AreaResponse probationArea;
+public class Name {
+  String forename;
+  String middleNames;
+  String surname;
 }
