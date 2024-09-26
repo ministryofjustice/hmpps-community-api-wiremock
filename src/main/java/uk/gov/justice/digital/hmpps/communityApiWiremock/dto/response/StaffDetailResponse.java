@@ -8,12 +8,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StaffDetailResponse {
 
-  Long staffIdentifier;
-  String staffCode;
-  StaffResponse staff;
+  Long id;
+  String code;
+  Name name;
   List<TeamResponse> teams;
   String email;
   String telephoneNumber;
   String username;
-  AreaResponse probationArea;
+  AreaResponse provider;
+  Boolean unallocated;
 }

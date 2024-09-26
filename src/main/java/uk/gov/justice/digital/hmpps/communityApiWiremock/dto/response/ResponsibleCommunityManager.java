@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @JsonInclude(Include.NON_NULL)
-public class CommunityOrPrisonOffenderManager {
-  Boolean isResponsibleOfficer = true;
-  Long staffId;
-  String staffCode;
-  AreaResponse probationArea;
+public class ResponsibleCommunityManager {
+  Long id;
+  String code;
+  String email;
+  AreaResponse provider;
   TeamResponse team;
 }

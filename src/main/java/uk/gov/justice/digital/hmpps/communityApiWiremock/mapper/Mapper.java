@@ -1,19 +1,13 @@
 package uk.gov.justice.digital.hmpps.communityApiWiremock.mapper;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.OffenderEntity;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.StaffEntity;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CaseloadResponse;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CommunityOrPrisonOffenderManager;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.OffenderManagerResponse;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationerResponse;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationSearchContent;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.StaffDetailResponse;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.TeamResponse;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.UserDetailResponse;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class Mapper {
@@ -22,10 +16,6 @@ public class Mapper {
 
   public Mapper(ModelMapper modelMapper) {
     this.modelMapper = modelMapper;
-  }
-
-  public UserDetailResponse fromEntityToUserDetailResponse(StaffEntity staffEntity) {
-    return modelMapper.map(staffEntity, UserDetailResponse.class);
   }
 
   public StaffDetailResponse fromEntityToStaffDetailResponse(StaffEntity staffEntity) {
@@ -44,8 +34,8 @@ public class Mapper {
     return modelMapper.map(offenderEntity, CaseloadResponse.class);
   }
 
-  public CommunityOrPrisonOffenderManager fromEntityToCommunityOrPrisonOffenderManager(OffenderEntity offenderEntity) {
-    return modelMapper.map(offenderEntity, CommunityOrPrisonOffenderManager.class);
+  public ResponsibleCommunityManager fromEntityToCommunityOrPrisonOffenderManager(OffenderEntity offenderEntity) {
+    return modelMapper.map(offenderEntity, ResponsibleCommunityManager.class);
   }
 
   public ProbationerResponse fromEntityToProbationerResponse(OffenderEntity offenderEntity) {
