@@ -44,7 +44,8 @@ public class CommunityApiWiremockConfiguration {
 
     modelMapper.createTypeMap(StaffEntity.class, StaffDetailResponse.class)
         .addMappings(mapper -> mapper.skip(StaffDetailResponse::setTeams))
-        .addMappings(mapper -> mapper.<Long>map(StaffEntity::getStaffIdentifier, (dest, v) -> dest.setId(v)))
+        .addMappings(mapper -> mapper.map(StaffEntity::getStaffIdentifier, StaffDetailResponse::setId))
+        .addMappings(mapper -> mapper.map(StaffEntity::getStaffCode, StaffDetailResponse::setCode))
         .addMappings(mapper -> mapper.<String>map(StaffEntity::getStaffForenames, (dest, v) -> dest.getName().setForename(v)))
         .addMappings(mapper -> mapper.<String>map(StaffEntity::getStaffSurname, (dest, v) -> dest.getName().setSurname(v)))
         .addMappings(mapper -> mapper.<String>map(StaffEntity::getProbationAreaCode, (dest, v) -> dest.getProvider().setCode(v)))
