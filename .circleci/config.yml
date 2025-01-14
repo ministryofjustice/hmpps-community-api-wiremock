@@ -13,8 +13,9 @@ jobs:
           name: Run tests
           command: mvn test
   push:
-    docker:
-      - image: cimg/base:stable
+    machine:
+      image: cimg/base:stable
+    resource_class: 2xlarge
     steps:
       - checkout
       - run:
