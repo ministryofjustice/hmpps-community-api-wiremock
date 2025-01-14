@@ -14,7 +14,7 @@ jobs:
           command: mvn test
   push:
     machine:
-      image: cimg/base:stable
+      image: cimg/base:2025.01
     steps:
       - checkout
       - run:
