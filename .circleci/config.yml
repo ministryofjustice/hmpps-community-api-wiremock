@@ -50,3 +50,7 @@ workflows:
       - push:
           requires:
             - validate
+          filters:
+            branches:
+              only:
+                - main
