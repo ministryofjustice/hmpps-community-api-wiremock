@@ -5,7 +5,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class NameResponse {
-    String forename;
-    String surname;
+public class PageMetadata {
+	long page = 1;
+	long size = 10;
+	long totalElements = 10;
+	long totalPages = 1;
 }

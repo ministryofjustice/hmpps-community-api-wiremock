@@ -5,10 +5,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class StaffResponse {
-
-  String code;
-  String forenames;
-  String surname;
-  Boolean unallocated = false;
+public class ProbationCaseResponse {
+  String crn;
+  String nomisId;
+  String croNumber;
+  String pncNumber;
 }
