@@ -4,7 +4,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.OffenderEntity;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.StaffEntity;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.*;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CaseloadResponse;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationCaseResponse;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ResponsibleCommunityManager;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.StaffDetailResponse;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.TeamResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,21 +42,7 @@ public class Mapper {
     return modelMapper.map(offenderEntity, ResponsibleCommunityManager.class);
   }
 
-  public ProbationerResponse fromEntityToProbationerResponse(OffenderEntity offenderEntity) {
-    ProbationerResponse result = modelMapper.map(offenderEntity, ProbationerResponse.class);
-
-    if (offenderEntity.getStaff() != null) {
-      OffenderManagerResponse offenderManager = modelMapper.map(offenderEntity.getStaff(), OffenderManagerResponse.class);
-      offenderManager.setTeam(modelMapper.map(offenderEntity.getTeam(), TeamResponse.class));
-      result.setOffenderManagers(List.of(offenderManager));
-    } else {
-      result.setOffenderManagers(List.of());
-    }
-
-    return result;
-  }
-
-  public ProbationSearchContent fromEntityToProbationSearchContent(OffenderEntity offenderEntity) {
-    return modelMapper.map(offenderEntity, ProbationSearchContent.class);
+  public ProbationCaseResponse fromEntityToProbationCaseResponse(OffenderEntity offenderEntity) {
+    return modelMapper.map(offenderEntity, ProbationCaseResponse.class);
   }
 }

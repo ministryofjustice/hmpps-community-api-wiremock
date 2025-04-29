@@ -1,9 +1,7 @@
 package uk.gov.justice.digital.hmpps.communityApiWiremock.resource;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,19 +9,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.OffenderEntity;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.StaffEntity;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.request.ProbationSearchRequest;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.request.SearchProbationerRequest;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.request.SearchRequest;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CaseloadResponse;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.PageMetadata;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.PagedModel;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationCaseResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ResponsibleCommunityManager;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationerResponse;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationSearchContent;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationSearchResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.StaffDetailResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.exception.NotFoundException;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.mapper.Mapper;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.service.DeliusService;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Transactional
@@ -99,7 +100,7 @@ public class DeliusResource {
     if (response.size() != staffUsernames.size()) {
       staffUsernames.stream()
           .filter(s -> !response.stream().map(StaffDetailResponse::getUsername)
-              .collect(Collectors.toList()).contains(s))
+                  .toList().contains(s))
           .forEach(s -> {
             StaffDetailResponse extraStaff = mapper.fromEntityToStaffDetailResponse(
                 this.service.getStaff(2000L).get());
@@ -118,6 +119,17 @@ public class DeliusResource {
         .collect(Collectors.toList());
   }
 
+  @GetMapping(value = "/staff/byid/{staffId}/caseload/team-managed-offenders")
+  public PagedModel<CaseloadResponse> getTeamCaseloadByStaff(@PathVariable long staffId,
+                                                             @RequestBody Optional<SearchRequest> body,
+                                                             @PageableDefault(size = 100, sort = {"firstName", "surname"}) Pageable page) {
+    return new PagedModel<>(
+            service.getTeamManagedOffendersByStaffId(staffId, body.map(SearchRequest::getQuery).orElse(""), page).stream()
+                    .map(mapper::fromEntityToCaseloadResponse)
+                    .collect(Collectors.toList()),
+            new PageMetadata());
+  }
+
   @GetMapping(value = "/team/{teamCode}/caseload/managed-offenders")
   public List<CaseloadResponse> getTeamCaseload(@PathVariable String teamCode) {
     return service.getAllOffendersByTeamCode(teamCode).stream()
@@ -125,54 +137,32 @@ public class DeliusResource {
         .collect(Collectors.toList());
   }
 
-  @GetMapping(value = "/probation-case/{crn}/responsible-community-manager")
-  public ResponsibleCommunityManager getManagersForAnOffender(@PathVariable String crn) {
-    return mapper.fromEntityToCommunityOrPrisonOffenderManager(service.getOffenderByCrn(crn));
+  @GetMapping(value = "/probation-case/{crnOrNomisId}")
+  public ProbationCaseResponse findCase(@PathVariable String crnOrNomisId) {
+    return service.findOffendersByCrnOrNomsNumberIn(List.of(crnOrNomisId)).stream().findFirst()
+            .map(mapper::fromEntityToProbationCaseResponse)
+            .orElse(null);
+  }
+
+  @PostMapping(value = "/probation-case")
+  public List<ProbationCaseResponse> findCases(@RequestBody List<String> crnsOrNomisIds) {
+    return service.findOffendersByCrnOrNomsNumberIn(crnsOrNomisIds).stream()
+            .map(mapper::fromEntityToProbationCaseResponse)
+            .toList();
+  }
+
+  @GetMapping(value = "/probation-case/{crnOrNomisId}/responsible-community-manager")
+  public ResponsibleCommunityManager getManagersForAnOffender(@PathVariable String crnOrNomisId) {
+    return service.findOffendersByCrnOrNomsNumberIn(List.of(crnOrNomisId)).stream().findFirst()
+            .map(mapper::fromEntityToCommunityOrPrisonOffenderManager)
+            .orElse(null);
   }
 
   @PostMapping(value = "/probation-case/responsible-community-manager")
-  public List<ResponsibleCommunityManager> getManagersForAnOffender(@RequestBody List<String> crns) {
-    return service.findOffendersByCrnIn(crns).stream()
+  public List<ResponsibleCommunityManager> getManagersForAnOffender(@RequestBody List<String> crnsOrNomisIds) {
+    return service.findOffendersByCrnOrNomsNumberIn(crnsOrNomisIds).stream()
             .map(mapper::fromEntityToCommunityOrPrisonOffenderManager)
             .collect(Collectors.toList());
-  }
-
-  @PostMapping(value = "/search")
-  public List<ProbationerResponse> getProbationer(@RequestBody SearchProbationerRequest body) {
-    OffenderEntity offender = body.getNomsNumber() != null ? service.getOffenderByNomsId(body.getNomsNumber()) : service.getOffenderByCrn(body.getCrn());
-    if (offender == null) {
-      return Collections.emptyList();
-    }
-
-    ProbationerResponse response = mapper.fromEntityToProbationerResponse(offender);
-
-    return List.of(response);
-  }
-
-  @PostMapping(value = "/crns")
-  public List<ProbationerResponse> getProbationersByCrns(@RequestBody List<String> crns) {
-    return service.findOffendersByCrnIn(crns).stream()
-        .map(mapper::fromEntityToProbationerResponse)
-        .collect(Collectors.toList());
-  }
-
-  @PostMapping(value = "/nomsNumbers")
-  public List<ProbationerResponse> getProbationersByNomsNumbers(@RequestBody List<String> nomsNumbers) {
-    return service.findOffendersByNomsNumberIn(nomsNumbers).stream()
-        .map(mapper::fromEntityToProbationerResponse)
-        .collect(Collectors.toList());
-  }
-
-  @PostMapping(value = "/licence-caseload/by-team")
-  public ProbationSearchResponse getProbationSearchResult(@RequestBody ProbationSearchRequest body) {
-    List<ProbationSearchContent> content = service
-            .getProbationSearchResult(body.getTeamCodes(), body.getQuery(), body.getSortBy().get(0))
-            .stream()
-            .map(mapper::fromEntityToProbationSearchContent)
-            .toList();
-    ProbationSearchResponse response = new ProbationSearchResponse();
-    response.setContent(content);
-    return response;
   }
 
   @GetMapping(value = "/health/ping")

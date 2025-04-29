@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.communityApiWiremock.config;
 
-import javax.sql.DataSource;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,12 +10,12 @@ import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.OffenderEnti
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.StaffEntity;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.TeamEntity;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.CaseloadResponse;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationCaseResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ResponsibleCommunityManager;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.OffenderManagerResponse;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationerResponse;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationSearchContent;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.StaffDetailResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.TeamResponse;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class CommunityApiWiremockConfiguration {
@@ -53,6 +52,7 @@ public class CommunityApiWiremockConfiguration {
 
     modelMapper.createTypeMap(OffenderEntity.class, CaseloadResponse.class)
         .addMappings(mapper -> mapper.map(OffenderEntity::getCrnNumber, CaseloadResponse::setCrn))
+            .addMappings(mapper -> mapper.map(OffenderEntity::getNomsNumber, CaseloadResponse::setNomisId))
         .addMappings(mapper -> mapper.<String>map(src -> src.getStaff().getStaffForenames(), (dest, v) -> dest.getStaff().getName().setForename(v)))
         .addMappings(mapper -> mapper.<String>map(src -> src.getStaff().getStaffSurname(), (dest, v) -> dest.getStaff().getName().setSurname(v)))
         .addMappings(mapper -> mapper.<String>map(src -> src.getStaff().getStaffCode(), (dest, v) -> dest.getStaff().setCode(v)))
@@ -65,8 +65,14 @@ public class CommunityApiWiremockConfiguration {
         .addMappings(mapper -> mapper.<String>map(src -> src.getTeam().getDistrictDescription(), (dest, v) -> dest.getTeam().getDistrict().setDescription(v)));
 
     modelMapper.createTypeMap(OffenderEntity.class, ResponsibleCommunityManager.class)
+            .addMappings(mapper -> mapper.<String>map(OffenderEntity::getCrnNumber, (dest, v) -> dest.getProbationCase().setCrn(v)))
+            .addMappings(mapper -> mapper.<String>map(OffenderEntity::getNomsNumber, (dest, v) -> dest.getProbationCase().setNomisId(v)))
+            .addMappings(mapper -> mapper.<String>map(OffenderEntity::getPncNumber, (dest, v) -> dest.getProbationCase().setPncNumber(v)))
+            .addMappings(mapper -> mapper.<String>map(OffenderEntity::getCroNumber, (dest, v) -> dest.getProbationCase().setCroNumber(v)))
         .addMappings(mapper -> mapper.map(src -> src.getStaff().getStaffIdentifier(), ResponsibleCommunityManager::setId))
         .addMappings(mapper -> mapper.map(src -> src.getStaff().getStaffCode(), ResponsibleCommunityManager::setCode))
+            .addMappings(mapper -> mapper.map(src -> src.getStaff().getEmail(), ResponsibleCommunityManager::setEmail))
+            .addMappings(mapper -> mapper.map(src -> src.getStaff().getTelephoneNumber(), ResponsibleCommunityManager::setTelephoneNumber))
         .addMappings(mapper -> mapper.<String>map(src -> src.getStaff().getProbationAreaCode(), (dest, v) -> dest.getProvider().setCode(v)))
         .addMappings(mapper -> mapper.<String>map(src -> src.getStaff().getProbationAreaDescription(), (dest, v) -> dest.getProvider().setDescription(v)))
         .addMappings(mapper -> mapper.<String>map(src -> src.getTeam().getTeamCode(), (dest, v) -> dest.getTeam().setCode(v)))
@@ -76,21 +82,6 @@ public class CommunityApiWiremockConfiguration {
         .addMappings(mapper -> mapper.<String>map(src -> src.getTeam().getDistrictCode(), (dest, v) -> dest.getTeam().getDistrict().setCode(v)))
         .addMappings(mapper -> mapper.<String>map(src -> src.getTeam().getDistrictDescription(), (dest, v) -> dest.getTeam().getDistrict().setDescription(v)));
 
-    modelMapper.createTypeMap(OffenderEntity.class, ProbationerResponse.class)
-        .addMappings(mapper -> mapper.skip(ProbationerResponse::setOffenderManagers))
-        .addMappings(mapper -> mapper.<String>map(OffenderEntity::getNomsNumber, (dest, v) -> dest.getOtherIds().setNomsNumber(v)))
-        .addMappings(mapper -> mapper.<String>map(OffenderEntity::getCrnNumber, (dest, v) -> dest.getOtherIds().setCrn(v)))
-        .addMappings(mapper -> mapper.<String>map(OffenderEntity::getCroNumber, (dest, v) -> dest.getOtherIds().setCroNumber(v)))
-        .addMappings(mapper -> mapper.<String>map(OffenderEntity::getPncNumber, (dest, v) -> dest.getOtherIds().setPncNumber(v)));
-
-    modelMapper.createTypeMap(StaffEntity.class, OffenderManagerResponse.class)
-        .addMappings(mapper -> mapper.skip(OffenderManagerResponse::setTeam))
-        .addMappings(mapper -> mapper.<String>map(StaffEntity::getStaffCode, (dest, v) -> dest.getStaff().setCode(v)))
-        .addMappings(mapper -> mapper.<String>map(StaffEntity::getStaffForenames, (dest, v) -> dest.getStaff().setForenames(v)))
-        .addMappings(mapper -> mapper.<String>map(StaffEntity::getStaffSurname, (dest, v) -> dest.getStaff().setSurname(v)))
-        .addMappings(mapper -> mapper.<String>map(StaffEntity::getProbationAreaCode, (dest, v) -> dest.getProbationArea().setCode(v)))
-        .addMappings(mapper -> mapper.<String>map(StaffEntity::getProbationAreaDescription, (dest, v) -> dest.getProbationArea().setDescription(v)));
-
     modelMapper.createTypeMap(TeamEntity.class, TeamResponse.class)
         .addMappings(mapper -> mapper.<String>map(TeamEntity::getBoroughCode, (dest, v) -> dest.getBorough().setCode(v)))
         .addMappings(mapper -> mapper.<String>map(TeamEntity::getBoroughDescription, (dest, v) -> dest.getBorough().setDescription(v)))
@@ -99,16 +90,11 @@ public class CommunityApiWiremockConfiguration {
         .addMappings(mapper -> mapper.map(TeamEntity::getTeamCode, TeamResponse::setCode))
         .addMappings(mapper -> mapper.map(TeamEntity::getTeamDescription, TeamResponse::setDescription));
 
-    modelMapper.createTypeMap(OffenderEntity.class, ProbationSearchContent.class)
-        .addMappings(mapper -> mapper.<String>map(OffenderEntity::getForename, (dest, v) -> dest.getName().setForename(v)))
-        .addMappings(mapper -> mapper.<String>map(OffenderEntity::getSurname, (dest, v) -> dest.getName().setSurname(v)))
-        .addMappings(mapper -> mapper.<String>map(OffenderEntity::getCrnNumber, (dest, v) -> dest.getIdentifiers().setCrn(v)))
-        .addMappings(mapper -> mapper.<String>map(OffenderEntity::getNomsNumber, (dest, v) -> dest.getIdentifiers().setNoms(v)))
-        .addMappings(mapper -> mapper.<String>map(src -> src.getStaff().getStaffCode(), (dest, v) -> dest.getManager().setCode(v)))
-        .addMappings(mapper -> mapper.<String>map(src -> src.getStaff().getStaffForenames(), (dest, v) -> dest.getManager().getName().setForename(v)))
-        .addMappings(mapper -> mapper.<String>map(src -> src.getStaff().getStaffSurname(), (dest, v) -> dest.getManager().getName().setSurname(v)))
-        .addMappings(mapper -> mapper.<String>map(src -> src.getTeam().getTeamCode(), (dest, v) -> dest.getManager().getTeam().setCode(v)))
-        .addMappings(mapper -> mapper.<String>map(src -> src.getTeam().getTeamDescription(), (dest, v) -> dest.getManager().getTeam().setDescription(v)));
+    modelMapper.createTypeMap(OffenderEntity.class, ProbationCaseResponse.class)
+            .addMappings(mapper -> mapper.map(OffenderEntity::getCrnNumber, ProbationCaseResponse::setCrn))
+            .addMappings(mapper -> mapper.map(OffenderEntity::getNomsNumber, ProbationCaseResponse::setNomisId))
+            .addMappings(mapper -> mapper.map(OffenderEntity::getPncNumber, ProbationCaseResponse::setPncNumber))
+            .addMappings(mapper -> mapper.map(OffenderEntity::getCroNumber, ProbationCaseResponse::setCroNumber));
 
     return modelMapper;
   }

@@ -1,12 +1,6 @@
 package uk.gov.justice.digital.hmpps.communityApiWiremock.service;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.OffenderEntity;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.StaffEntity;
@@ -14,8 +8,12 @@ import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.entity.TeamEntity;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.repository.OffenderRepository;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.repository.StaffRepository;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dao.repository.TeamRepository;
-import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.request.ProbationSearchSortByRequest;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.exception.NotFoundException;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DeliusService {
@@ -50,17 +48,13 @@ public class DeliusService {
     return this.staffRepository.findByUsernameIn(staffUsernames);
   }
 
-  public List<StaffEntity> getStaffByStaffCodes(List<String> staffCodes) {
-    return this.staffRepository.findByStaffCodeIn(staffCodes);
-  }
-
   public List<StaffEntity> getPduHeads(String pduCode) {
     return this.teamRepository.findByBoroughCode(pduCode).map(TeamEntity::getStaff).orElse(Collections.emptyList());
   }
 
   public List<OffenderEntity> getAllOffendersByStaffId(Long staffId) {
     StaffEntity staff = this.staffRepository.findByStaffIdentifier(staffId).orElseThrow(() ->
-        new NotFoundException(String.format("Staff with id %s not found", staffId)));;
+            new NotFoundException(String.format("Staff with id %s not found", staffId)));
     return staff.getManagedOffenders();
   }
 
@@ -69,45 +63,34 @@ public class DeliusService {
     return team.getManagedOffenders();
   }
 
-  public OffenderEntity getOffenderByNomsId(String nomisId) {
-    return this.offenderRepository.findByNomsNumber(nomisId).orElse(null);
+  public List<OffenderEntity> findOffendersByCrnOrNomsNumberIn(List<String> crnsOrNomsNumbers) {
+    return this.offenderRepository.findByCrnNumberInOrNomsNumberIn(crnsOrNomsNumbers, crnsOrNomsNumbers);
   }
 
-  public OffenderEntity getOffenderByCrn(String crn) {
-    return this.offenderRepository.findByCrnNumber(crn).orElse(null);
-  }
-
-  public List<OffenderEntity> findOffendersByCrnIn(List<String> crns) {
-    return this.offenderRepository.findByCrnNumberIn(crns);
-  }
-
-  public List<OffenderEntity> findOffendersByNomsNumberIn(List<String> nomsNumbers) {
-    return this.offenderRepository.findByNomsNumberIn(nomsNumbers);
-  }
-
-  public List<OffenderEntity> getProbationSearchResult(List<String> teamCodes, String query, ProbationSearchSortByRequest sortBy) {
+  public List<OffenderEntity> getTeamManagedOffendersByStaffId(Long staffId, String query, Pageable page) {
     String searchString = query.toLowerCase().trim();
 
     if (searchString.isEmpty())
       return List.of();
 
-    Comparator<OffenderEntity> sortPreference;
+    Comparator<OffenderEntity> sortPreference = page.getSort().stream().findFirst()
+            .filter(sort -> sort.getProperty().equals("firstName"))
+            .map(sort -> {
+              if (sort.getDirection().isAscending()) {
+                return Comparator.comparing(OffenderEntity::getForename);
+              } else {
+                return Comparator.comparing(OffenderEntity::getForename, Comparator.reverseOrder());
+              }
+            }).orElse(Comparator.comparing(OffenderEntity::getSurname));
 
-    if (sortBy.getField() == "name.forename") {
-      if (sortBy.getDirection() == "asc") {
-        sortPreference = Comparator.comparing(OffenderEntity::getForename);
-      } else {
-        sortPreference = Comparator.comparing(OffenderEntity::getForename, Comparator.reverseOrder());
-      }
-    } else {
-      sortPreference = Comparator.comparing(OffenderEntity::getSurname);
-    }
-
-    return teamCodes.stream()
-            .flatMap(teamCode -> getAllOffendersByTeamCode(teamCode).stream())
-            .filter(offender -> matchesOffender(offender, searchString))
-            .sorted(sortPreference)
-            .toList();
+    return getStaff(staffId)
+            .map(s -> s.getTeams().stream()
+                    .map(TeamEntity::getTeamCode)
+                    .flatMap(teamCode -> getAllOffendersByTeamCode(teamCode).stream())
+                    .filter(offender -> matchesOffender(offender, searchString))
+                    .sorted(sortPreference)
+                    .toList()
+            ).orElse(Collections.emptyList());
   }
 
   private Boolean matchesOffender(OffenderEntity offender, String searchString) {
