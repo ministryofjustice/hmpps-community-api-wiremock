@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ProbationC
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.ResponsibleCommunityManager;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.StaffDetailResponse;
 import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.TeamResponse;
+import uk.gov.justice.digital.hmpps.communityApiWiremock.dto.response.Name;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,7 +40,12 @@ public class Mapper {
   }
 
   public ResponsibleCommunityManager fromEntityToCommunityOrPrisonOffenderManager(OffenderEntity offenderEntity) {
-    return modelMapper.map(offenderEntity, ResponsibleCommunityManager.class);
+    ResponsibleCommunityManager com = modelMapper.map(offenderEntity, ResponsibleCommunityManager.class);
+    Name comName = new Name();
+    comName.setForename(offenderEntity.getStaff().getStaffForenames());
+    comName.setSurname(offenderEntity.getStaff().getStaffSurname());
+    com.setName(comName);
+    return com;
   }
 
   public ProbationCaseResponse fromEntityToProbationCaseResponse(OffenderEntity offenderEntity) {
