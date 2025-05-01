@@ -16,9 +16,11 @@ public class ResponsibleCommunityManager {
   ProbationCaseResponse probationCase;
   Long id;
   String code;
+  Name name;
   String email;
   String telephoneNumber;
   AreaResponse provider;
   TeamResponse team;
   String allocationDate = LocalDate.now().minusDays(1).toString();
+  Boolean unallocated = false;
 }

@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Name {
   String forename;
-  String middleNames;
+  String middleName;
   String surname;
 }
