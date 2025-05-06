@@ -119,7 +119,7 @@ public class DeliusResource {
         .collect(Collectors.toList());
   }
 
-  @GetMapping(value = "/staff/byid/{staffId}/caseload/team-managed-offenders")
+  @PostMapping(value = "/staff/byid/{staffId}/caseload/team-managed-offenders")
   public PagedModel<CaseloadResponse> getTeamCaseloadByStaff(@PathVariable long staffId,
                                                              @RequestBody Optional<SearchRequest> body,
                                                              @PageableDefault(size = 100, sort = {"firstName", "surname"}) Pageable page) {
