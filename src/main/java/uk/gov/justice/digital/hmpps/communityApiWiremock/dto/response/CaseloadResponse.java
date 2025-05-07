@@ -9,10 +9,9 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 public class CaseloadResponse {
-
   @JsonFormat(pattern = "yyyy-MM-dd")
   LocalDate allocationDate = LocalDate.now().minusDays(1);
-
+  Name name;
   String crn;
   String nomisId;
   StaffDetailResponse staff;
